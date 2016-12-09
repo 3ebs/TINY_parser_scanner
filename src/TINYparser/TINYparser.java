@@ -5,20 +5,27 @@
  */
 package TINYparser;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.IOException;
 import javax.swing.JFileChooser;
+
 
 /**
  *
  * @author MMZMM
  */
+
+
+
+
+
 public class TINYparser extends javax.swing.JFrame {
 
     /**
      * Creates new form TINYparser
      */
+    private static String allLines;
     public TINYparser() {
         initComponents();
     }
@@ -116,7 +123,7 @@ public class TINYparser extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
-        
+        backEndParser backEnd = new backEndParser(allLines);
     }//GEN-LAST:event_RunButtonActionPerformed
 
     private void SelectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SelectButtonMouseClicked
@@ -127,13 +134,28 @@ public class TINYparser extends javax.swing.JFrame {
     private void SelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SelectButtonActionPerformed
         // TODO add your handling code here:
         int returnVal = FileChooser.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION)
+        try 
         {
-            File file = FileChooser.getSelectedFile();
-        } 
-        else 
+            if (returnVal == JFileChooser.APPROVE_OPTION)
+            {
+                BufferedReader br = new BufferedReader(new FileReader(FileChooser.getSelectedFile()));
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
+                while (line != null) {
+                    sb.append(line);
+                    sb.append(System.lineSeparator());
+                    line = br.readLine();
+                }
+                allLines = sb.toString();
+            } 
+            else 
+            {
+                System.out.println("File access cancelled by user.");
+            }
+        }
+        catch(Exception e)
         {
-            System.out.println("File access cancelled by user.");
+            System.out.println("Error reading file. :(");
         }
     }//GEN-LAST:event_SelectButtonActionPerformed
 
@@ -168,15 +190,17 @@ public class TINYparser extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(TINYparser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
+        java.awt.EventQueue.invokeLater(new Runnable() 
+        {
             public void run() {
                 new TINYparser().setVisible(true);
             }
         });
+        
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFileChooser FileChooser;
     private javax.swing.JLabel InputLable;
