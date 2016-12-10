@@ -14,12 +14,6 @@ public class backEndParser
     private String[] fileLines;
     private String currentLine;
     private int tokenIndex;
-    //private TreeNode currentNode;
-    //private TreeNode leftNode;
-    //private TreeNode rightNode;
-    private boolean flagFactor;
-    private boolean flagTerm;
-    private boolean parentheseFlag;
     public backEndParser(String lines)
     {
         fileLines = lines.split("\n");
