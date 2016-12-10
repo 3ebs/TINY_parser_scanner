@@ -21,6 +21,9 @@ public class TreeNode
         this.data = data;
         this.children = new LinkedList<TreeNode>();
     }
+    public TreeNode() {
+        this.children = new LinkedList<TreeNode>();
+    }
     public void printTree()
     {
         print(this);
@@ -69,7 +72,19 @@ public class TreeNode
         this.children.add(childNode);
         return childNode;
     }
-    
-    
+    public TreeNode getParent()
+    {
+        return parent;
+    }
+    public TreeNode addChild() {
+        TreeNode childNode = new TreeNode();
+        childNode.parent = this;
+        this.children.add(childNode);
+        return childNode;
+    }
+    public void setData(String d)
+    {
+        data = d;
+    }
 }
 

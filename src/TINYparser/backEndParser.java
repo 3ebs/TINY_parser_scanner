@@ -15,6 +15,9 @@ public class backEndParser
     private String currentLine;
     private int tokenIndex;
     private TreeNode currentNode;
+    private boolean flagFactor;
+    private boolean flagTerm;
+    private boolean parentheseFlag;
     public backEndParser(String lines)
     {
         fileLines = lines.split("\r\n");
@@ -51,13 +54,15 @@ public class backEndParser
         currentLine = fileLines[++tokenIndex];
         if (currentLine.split(",")[1].equals("ID")) 
         {
-            currentNode.addChild("read\n(" + currentLine.split(",")[0] + ")");
+            currentNode = currentNode.addChild("read\n(" + currentLine.split(",")[0] + ")");
             currentLine = fileLines[++tokenIndex];
         }
     }
     private void write_stmt()
     {
-        exp();
+        //currentLine = fileLines[++tokenIndex];
+        currentNode = currentNode.addChild("write");
+        String e = exp();
     }
     private void if_stmt()
     {
@@ -73,47 +78,83 @@ public class backEndParser
     }
     private String exp()
     {
+        currentLine = fileLines[++tokenIndex];
         String se = simple_exp();
-        String comp_op = comparison_op();
+        /*String comp_op = comparison_op();
         if (comp_op != null) 
         {
             se += simple_exp();
-        }
+        }*/
+        return se;
     }
     private String simple_exp()
     {
-        term();
+        //if (!parentheseFlag) currentNode = currentNode.addChild();
+        currentNode = currentNode.addChild();
+        int counter = 0;
+        flagTerm = false;
+        String t = term();
         while(true)
         {
             String op = addop();
             if (op == null)break;
-            term();
+            //currentNode = currentNode.getParent();
+            currentNode.setData("OP\n(" + currentLine.split(",")[0] + ")");
+            currentLine = fileLines[++tokenIndex];
+            //currentNode = currentNode.addChild();
+            counter++;
+            t = term();
         }
+        for(int i = 0; i <= counter && !flagFactor; i++)
+        {
+            currentNode = currentNode.getParent();
+        }
+        return t;
     }
-    private void term()
+    private String term()
     {
-        factor();
+        currentNode = currentNode.addChild();
+        int count = 0;
+        flagFactor = false;
+        String f = factor();
         while(true)
         {
             String op = mulop();
             if (op == null)break;
-            factor();
+            currentNode = currentNode.getParent();
+            currentNode.setData("OP\n(" + currentLine.split(",")[0] + ")");
+            currentLine = fileLines[++tokenIndex];
+            currentNode = currentNode.addChild();
+            count++;
+            f = factor();
         }
+        for(int i = 0; i <= count && !flagFactor; i++)
+        {
+            currentNode = currentNode.getParent();
+        }
+        return f;
     }
     private String factor()
     {
-        currentLine = fileLines[++tokenIndex];
         String fact = currentLine.split(",")[1];
         if (fact.equals("PARENTHESEOPEN")) 
         {
-            exp();
+            //currentNode = currentNode.addChild();
+            //parentheseFlag = true;
+            String st = "(" + exp() + ")";
+            //parentheseFlag = false;
+            flagFactor = true;
+            return st;
+
         }
         else if(fact.equals("NUMBER"))
         {
+            currentNode.setData("Const\n(" + currentLine.split(",")[0] + ")");
             return currentLine.split(",")[0];
         }
          else if(fact.equals("ID"))
         {
+            currentNode.setData("ID\n(" + currentLine.split(",")[0] + ")");
             return currentLine.split(",")[0];
         }
         return null;
@@ -136,6 +177,7 @@ public class backEndParser
     }
     private String mulop()
     {
+        if(tokenIndex != fileLines.length-1) currentLine = fileLines[++tokenIndex];
         String op = currentLine.split(",")[0];
         if (op.equals("*") || op.equals("/")) {
             return op;
