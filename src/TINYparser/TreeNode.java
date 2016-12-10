@@ -80,6 +80,13 @@ public class TreeNode
     {
         return this.children;
     }
+    public TreeNode setChildren(TreeNode t1, TreeNode t2)
+    {
+        this.children.clear();
+        this.children.add(t1);
+        this.children.add(t2);
+        return this;
+    }
     public TreeNode addChild() {
         TreeNode childNode = new TreeNode();
         childNode.parent = this;

@@ -94,7 +94,7 @@ public class backEndParser
             rightNode = simple_exp(rightNode);
         }
         if(node.getData() == null) return leftNode;
-        else return node;
+        else return node.setChildren(leftNode, rightNode);
     }
     private TreeNode simple_exp(TreeNode node)
     {
@@ -111,7 +111,7 @@ public class backEndParser
             rightNode = term(rightNode);
         }
         if(node.getData() == null) return leftNode;
-        else return node;
+        else return node.setChildren(leftNode, rightNode);
     }
     private TreeNode term(TreeNode node)
     {
@@ -127,7 +127,7 @@ public class backEndParser
             rightNode = factor(rightNode);
         }
         if(node.getData() == null) return leftNode;
-        else return node;
+        else return node.setChildren(leftNode, rightNode);
     }
     private TreeNode factor(TreeNode node)
     {
