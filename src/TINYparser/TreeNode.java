@@ -76,6 +76,10 @@ public class TreeNode
     {
         return parent;
     }
+    public LinkedList<TreeNode> getChildren()
+    {
+        return this.children;
+    }
     public TreeNode addChild() {
         TreeNode childNode = new TreeNode();
         childNode.parent = this;
@@ -85,6 +89,10 @@ public class TreeNode
     public void setData(String d)
     {
         data = d;
+    }
+    public String getData()
+    {
+        return this.data;
     }
 }
 

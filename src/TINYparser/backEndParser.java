@@ -62,7 +62,8 @@ public class backEndParser
     {
         //currentLine = fileLines[++tokenIndex];
         node = node.addChild("write");
-        TreeNode expression = exp(node);
+        node = node.addChild();
+        node = exp(node);
         return node;
     }
     private void if_stmt()
@@ -80,19 +81,20 @@ public class backEndParser
     private TreeNode exp(TreeNode node)
     {
         //currentLine = fileLines[++tokenIndex];
-        TreeNode currentNode = new TreeNode();
-        currentNode = node.addChild();
-        TreeNode leftNode = currentNode.addChild();
-        TreeNode rightNode = currentNode.addChild();
+        //TreeNode currentNode = new TreeNode();
+        //currentNode = node.addChild();
+        TreeNode leftNode = node.addChild();
+        TreeNode rightNode = node.addChild();
         leftNode = simple_exp(leftNode);
         String comp_op = comparison_op();
         if (comp_op != null) 
         {
-            currentNode.setData("OP\n(" + "<" + ")");
+            node.setData("OP\n(" + "<" + ")");
             if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             rightNode = simple_exp(rightNode);
         }
-        return currentNode;
+        if(node.getData() == null) return leftNode;
+        else return node;
     }
     private TreeNode simple_exp(TreeNode node)
     {
@@ -108,7 +110,8 @@ public class backEndParser
             if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             rightNode = term(rightNode);
         }
-        return node;
+        if(node.getData() == null) return leftNode;
+        else return node;
     }
     private TreeNode term(TreeNode node)
     {
@@ -123,7 +126,8 @@ public class backEndParser
             if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             rightNode = factor(rightNode);
         }
-        return node;
+        if(node.getData() == null) return leftNode;
+        else return node;
     }
     private TreeNode factor(TreeNode node)
     {
