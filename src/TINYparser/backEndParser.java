@@ -14,55 +14,62 @@ public class backEndParser
     private String[] fileLines;
     private String currentLine;
     private int tokenIndex;
-    private TreeNode currentNode;
+    //private TreeNode currentNode;
+    //private TreeNode leftNode;
+    //private TreeNode rightNode;
     private boolean flagFactor;
     private boolean flagTerm;
     private boolean parentheseFlag;
     public backEndParser(String lines)
     {
-        fileLines = lines.split("\r\n");
+        fileLines = lines.split("\n");
         currentLine = fileLines[0];
         tokenIndex = 0;
-        currentNode = new TreeNode("root");
         program();
     }
     private void program()
     {
-        stmt_sequence();
+        TreeNode currentNode = new TreeNode("root");
+        stmt_sequence(currentNode);
     }
-    private void stmt_sequence()
+    private void stmt_sequence(TreeNode node)
     {
         while(true)
         {
-            statement();
+            node = statement(node);
         }
     }
-    private void statement()
+    private TreeNode statement(TreeNode node)
     {
+        
         String token = currentLine.split(",")[0];
         if (token.equals("read")) 
         {
-            read_stmt();
+            return read_stmt(node);
         }
         else if (token.equals("write"))
         {
-            write_stmt();
+            return write_stmt(node);
         }
+        return null;
     }
-    private void read_stmt()
+    private TreeNode read_stmt(TreeNode node)
     {
-        currentLine = fileLines[++tokenIndex];
+        if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
         if (currentLine.split(",")[1].equals("ID")) 
         {
-            currentNode = currentNode.addChild("read\n(" + currentLine.split(",")[0] + ")");
-            currentLine = fileLines[++tokenIndex];
+            node = node.addChild("read\n(" + currentLine.split(",")[0] + ")");
+            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+            return node;
         }
+        return null;
     }
-    private void write_stmt()
+    private TreeNode write_stmt(TreeNode node)
     {
         //currentLine = fileLines[++tokenIndex];
-        currentNode = currentNode.addChild("write");
-        String e = exp();
+        node = node.addChild("write");
+        TreeNode expression = exp(node);
+        return node;
     }
     private void if_stmt()
     {
@@ -76,111 +83,108 @@ public class backEndParser
     {
         
     }
-    private String exp()
+    private TreeNode exp(TreeNode node)
     {
-        currentLine = fileLines[++tokenIndex];
-        String se = simple_exp();
-        /*String comp_op = comparison_op();
+        //currentLine = fileLines[++tokenIndex];
+        TreeNode currentNode = new TreeNode();
+        currentNode = node.addChild();
+        TreeNode leftNode = currentNode.addChild();
+        TreeNode rightNode = currentNode.addChild();
+        leftNode = simple_exp(leftNode);
+        String comp_op = comparison_op();
         if (comp_op != null) 
         {
-            se += simple_exp();
-        }*/
-        return se;
+            currentNode.setData("OP\n(" + "<" + ")");
+            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+            rightNode = simple_exp(rightNode);
+        }
+        return currentNode;
     }
-    private String simple_exp()
+    private TreeNode simple_exp(TreeNode node)
     {
-        //if (!parentheseFlag) currentNode = currentNode.addChild();
-        currentNode = currentNode.addChild();
-        int counter = 0;
-        flagTerm = false;
-        String t = term();
+        if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+        TreeNode leftNode = node.addChild();
+        TreeNode rightNode = node.addChild();
+        leftNode = term(leftNode);
         while(true)
         {
             String op = addop();
             if (op == null)break;
-            //currentNode = currentNode.getParent();
-            currentNode.setData("OP\n(" + currentLine.split(",")[0] + ")");
-            currentLine = fileLines[++tokenIndex];
-            //currentNode = currentNode.addChild();
-            counter++;
-            t = term();
+            node.setData("OP\n(" + currentLine.split(",")[0] + ")");
+            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+            rightNode = term(rightNode);
         }
-        for(int i = 0; i <= counter && !flagFactor; i++)
-        {
-            currentNode = currentNode.getParent();
-        }
-        return t;
+        return node;
     }
-    private String term()
+    private TreeNode term(TreeNode node)
     {
-        currentNode = currentNode.addChild();
-        int count = 0;
-        flagFactor = false;
-        String f = factor();
+        TreeNode leftNode = node.addChild();
+        TreeNode rightNode = node.addChild();
+        leftNode = factor(leftNode);
         while(true)
         {
             String op = mulop();
             if (op == null)break;
-            currentNode = currentNode.getParent();
-            currentNode.setData("OP\n(" + currentLine.split(",")[0] + ")");
-            currentLine = fileLines[++tokenIndex];
-            currentNode = currentNode.addChild();
-            count++;
-            f = factor();
+            node.setData("OP\n(" + currentLine.split(",")[0] + ")");
+            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+            rightNode = factor(rightNode);
         }
-        for(int i = 0; i <= count && !flagFactor; i++)
-        {
-            currentNode = currentNode.getParent();
-        }
-        return f;
+        return node;
     }
-    private String factor()
+    private TreeNode factor(TreeNode node)
     {
         String fact = currentLine.split(",")[1];
         if (fact.equals("PARENTHESEOPEN")) 
         {
-            //currentNode = currentNode.addChild();
-            //parentheseFlag = true;
-            String st = "(" + exp() + ")";
-            //parentheseFlag = false;
-            flagFactor = true;
-            return st;
+            //String st = "(" + exp() + ")";
+            //return st;
 
         }
         else if(fact.equals("NUMBER"))
         {
-            currentNode.setData("Const\n(" + currentLine.split(",")[0] + ")");
-            return currentLine.split(",")[0];
+            node.setData("Const\n(" + currentLine.split(",")[0] + ")");
+            return node;
         }
          else if(fact.equals("ID"))
         {
-            currentNode.setData("ID\n(" + currentLine.split(",")[0] + ")");
-            return currentLine.split(",")[0];
+            node.setData("ID\n(" + currentLine.split(",")[0] + ")");
+            return node;
         }
         return null;
     }
     private String comparison_op()
     {
-        String op = currentLine.split(",")[0];
-        if (op.equals("<") || op.equals("=")) {
-            return op;
+        if(tokenIndex < fileLines.length-1) 
+        {
+            String op = fileLines[tokenIndex+1].split(",")[0];
+            if (op.equals("<") || op.equals("=")) {
+                currentLine = fileLines[++tokenIndex];
+                return op;
+            }
         }
         return null;
     }
     private String addop()
     {
-        String op = currentLine.split(",")[0];
-        if (op.equals("+") || op.equals("-")) {
-            return op;
+        if(tokenIndex < fileLines.length-1) 
+        {
+            String op = fileLines[tokenIndex+1].split(",")[0];
+            if (op.equals("+") || op.equals("-")) {
+                currentLine = fileLines[++tokenIndex];
+                return op;
+            }
         }
         return null;
     }
     private String mulop()
     {
-        if(tokenIndex != fileLines.length-1) currentLine = fileLines[++tokenIndex];
-        String op = currentLine.split(",")[0];
-        if (op.equals("*") || op.equals("/")) {
-            return op;
+        if(tokenIndex < fileLines.length-1) 
+        {
+            String op = fileLines[tokenIndex+1].split(",")[0];
+            if (op.equals("*") || op.equals("/")) {
+                currentLine = fileLines[++tokenIndex];
+                return op;
+            }
         }
         return null;
     }
