@@ -104,10 +104,11 @@ public class TreeNode
     {
         data = d;
     }
-    public TreeNode setNode(String d)
+    public TreeNode setNode(TreeNode t1, boolean flag)
     {
-        this.data = d;
         this.children.clear();
+        if(flag) this.children = t1.children;
+        this.data = t1.getData();
         return this;
     }
     public String getData()
