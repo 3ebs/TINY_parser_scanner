@@ -80,9 +80,6 @@ public class backEndParser
     }
     private TreeNode exp(TreeNode node)
     {
-        //currentLine = fileLines[++tokenIndex];
-        //TreeNode currentNode = new TreeNode();
-        //currentNode = node.addChild();
         TreeNode leftNode = node.addChild();
         TreeNode rightNode = node.addChild();
         leftNode = simple_exp(leftNode);
