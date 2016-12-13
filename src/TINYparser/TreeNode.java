@@ -83,8 +83,15 @@ public class TreeNode
     public TreeNode setChildren(TreeNode t1, TreeNode t2)
     {
         this.children.clear();
+        //this.data = d;
         this.children.add(t1);
         this.children.add(t2);
+        return this;
+    }
+    public TreeNode setChildren(TreeNode t1)
+    {
+        this.children.clear();
+        this.children.add(t1);
         return this;
     }
     public TreeNode addChild() {
@@ -96,6 +103,12 @@ public class TreeNode
     public void setData(String d)
     {
         data = d;
+    }
+    public TreeNode setNode(String d)
+    {
+        this.data = d;
+        this.children.clear();
+        return this;
     }
     public String getData()
     {

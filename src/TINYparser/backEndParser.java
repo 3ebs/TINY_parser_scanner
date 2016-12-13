@@ -14,10 +14,12 @@ public class backEndParser
     private String[] fileLines;
     private String currentLine;
     private int tokenIndex;
+    private boolean pFlag;
     public backEndParser(String lines)
     {
         fileLines = lines.split("\n");
         currentLine = fileLines[0];
+        pFlag = false;
         tokenIndex = 0;
         program();
     }
@@ -45,7 +47,20 @@ public class backEndParser
         {
             return write_stmt(node);
         }
-        return null;
+        else if(token.equals(":="))
+        {
+            return assign_stmt(node);
+        }
+        else if(token.equals("if"))
+        {
+            //return if_stmt(node);
+        }
+        else if(token.equals("repeat"))
+        {
+            //return repeat_stmt(node);
+        }
+        if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+        return node.addChild();
     }
     private TreeNode read_stmt(TreeNode node)
     {
@@ -70,11 +85,15 @@ public class backEndParser
     {
         
     }
-    private void assign_stmt()
+    private TreeNode assign_stmt(TreeNode node)
     {
-        
+        currentLine = fileLines[tokenIndex-1];
+        node.setData("assign\n(" + currentLine.split(",")[0] + ")");
+        node = node.addChild();
+        node = exp(node);
+        return node.getParent();
     }
-    private void repeat_stmt()
+    //private TreeNode repeat_stmt(TreeNode node)
     {
         
     }
@@ -90,12 +109,13 @@ public class backEndParser
             if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             rightNode = simple_exp(rightNode);
         }
-        if(node.getData() == null) return leftNode;
+        if(node.getData() == null) return node.setNode(leftNode.getData());
         else return node.setChildren(leftNode, rightNode);
     }
     private TreeNode simple_exp(TreeNode node)
     {
-        if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+        if(currentLine.startsWith("(")) pFlag = true;
+        if(tokenIndex < fileLines.length-1 && !pFlag) currentLine = fileLines[++tokenIndex];
         TreeNode leftNode = node.addChild();
         TreeNode rightNode = node.addChild();
         leftNode = term(leftNode);
@@ -107,7 +127,7 @@ public class backEndParser
             if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             rightNode = term(rightNode);
         }
-        if(node.getData() == null) return leftNode;
+        if(node.getData() == null) return node.setNode(leftNode.getData());
         else return node.setChildren(leftNode, rightNode);
     }
     private TreeNode term(TreeNode node)
@@ -123,7 +143,7 @@ public class backEndParser
             if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             rightNode = factor(rightNode);
         }
-        if(node.getData() == null) return leftNode;
+        if(node.getData() == null) return node.setNode(leftNode.getData());
         else return node.setChildren(leftNode, rightNode);
     }
     private TreeNode factor(TreeNode node)
@@ -131,8 +151,10 @@ public class backEndParser
         String fact = currentLine.split(",")[1];
         if (fact.equals("PARENTHESEOPEN")) 
         {
-            //String st = "(" + exp() + ")";
-            //return st;
+            pFlag = false;
+            currentLine = "w" + currentLine;
+            node = exp(node);
+            return node;
 
         }
         else if(fact.equals("NUMBER"))
