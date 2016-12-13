@@ -34,7 +34,7 @@ public class backEndParser
     private void program()
     {
         TreeNode currentNode = new TreeNode("root");
-        stmt_sequence(currentNode);
+        currentNode = stmt_sequence(currentNode);
     }
     private TreeNode stmt_sequence(TreeNode node)
     {
@@ -42,6 +42,7 @@ public class backEndParser
         {
             node = statement(node);
             if(uFlag || eFlag || sFlag) break;
+            if(tokenIndex >= fileLines.length-1) break;
         }
         return node;
     }
@@ -56,6 +57,11 @@ public class backEndParser
         else if (token.equals("write"))
         {
             return write_stmt(node);
+        }
+        else if (token.equals(";"))
+        {
+            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+            return node;
         }
         else if(token.equals(":="))
         {
@@ -112,22 +118,25 @@ public class backEndParser
         node = node.addChild("IF");
         node = node.addChild();
         node = exp(node);
-        if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
-        matchInput = "if";
+        tokenIndex += 2;
+        if(tokenIndex < fileLines.length-1) currentLine = fileLines[tokenIndex];
+        matchInput = "IF";
         while(!match(node.getData())) node = node.getParent();
         node = stmt_sequence(node);
+        if(sFlag)
+        {
+            sFlag = false;
+            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+            matchInput = "IF";
+            while(!match(node.getData())) node = node.getParent();
+            node = stmt_sequence(node);
+        }
         if(eFlag)
         {
+            eFlag = false;
             if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             node = node.getParent();
             matchInput = node.getData();
-        }
-        else if(sFlag)
-        {
-            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
-            matchInput = "if";
-            while(!match(node.getData())) node = node.getParent();
-            node = stmt_sequence(node);
         }
         return node;
     }
@@ -166,7 +175,7 @@ public class backEndParser
         if (comp_op != null) 
         {
             node.setData("OP\n(" + currentLine.split(",")[0] + ")");
-            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+            //if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             rightNode = simple_exp(rightNode);
         }
         if(leftNode.getData().startsWith("OP")) flag = true;
@@ -186,7 +195,7 @@ public class backEndParser
             String op = addop();
             if (op == null)break;
             node.setData("OP\n(" + currentLine.split(",")[0] + ")");
-            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+            //if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             rightNode = term(rightNode);
         }
         if(leftNode.getData().startsWith("OP")) flag = true;
@@ -222,12 +231,12 @@ public class backEndParser
             return node;
 
         }
-        else if(fact.equals("NUMBER"))
+        else if(fact.equals("NUM"))
         {
             node.setData("Const\n(" + currentLine.split(",")[0] + ")");
             return node;
         }
-         else if(fact.equals("ID"))
+        else if(fact.equals("ID"))
         {
             node.setData("ID\n(" + currentLine.split(",")[0] + ")");
             return node;
