@@ -1,14 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package TINYparser;
 
-/**
- *
- * @author MMZMM
- */
+
 public class backEndParser 
 {
     private String[] fileLines;
@@ -19,6 +11,7 @@ public class backEndParser
     private boolean pFlag;
     private boolean sFlag;
     private boolean eFlag;
+    private boolean endTree;
     public backEndParser(String lines)
     {
         fileLines = lines.split("\n");
@@ -26,23 +19,24 @@ public class backEndParser
         pFlag = false;
         eFlag = false;
         sFlag = false;
+        endTree = false;
         matchInput = "root";
         uFlag = false;
         tokenIndex = 0;
-        program();
+        //program();
     }
-    private void program()
+    public TreeNode program()
     {
         TreeNode currentNode = new TreeNode("root");
         currentNode = stmt_sequence(currentNode);
+        return currentNode;
     }
     private TreeNode stmt_sequence(TreeNode node)
     {
         while(true)
         {
             node = statement(node);
-            if(uFlag || eFlag || sFlag) break;
-            if(tokenIndex >= fileLines.length-1) break;
+            if(uFlag || eFlag || sFlag || endTree) break;
         }
         return node;
     }
@@ -57,6 +51,11 @@ public class backEndParser
         else if (token.equals("write"))
         {
             return write_stmt(node);
+        }
+        else if (token.equals("\n"))
+        {
+            endTree = true;
+            return node;
         }
         else if (token.equals(";"))
         {
@@ -195,7 +194,7 @@ public class backEndParser
             String op = addop();
             if (op == null)break;
             node.setData("OP\n(" + currentLine.split(",")[0] + ")");
-            //if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
+            if(tokenIndex < fileLines.length-1) currentLine = fileLines[++tokenIndex];
             rightNode = term(rightNode);
         }
         if(leftNode.getData().startsWith("OP")) flag = true;
@@ -287,6 +286,4 @@ public class backEndParser
         }
         return false;
     }
-    
-    
 }
