@@ -52,7 +52,7 @@ public class backEndParser
         {
             return write_stmt(node);
         }
-        else if (token.equals("\n"))
+        else if (token.equals("--"))
         {
             endTree = true;
             return node;
