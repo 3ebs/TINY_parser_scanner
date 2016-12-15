@@ -222,7 +222,7 @@ public class backEndParser
     private TreeNode factor(TreeNode node)
     {
         String fact = currentLine.split(",")[1];
-        if (fact.equals("PARENTHESEOPEN")) 
+        if (fact.equals("PARENTHESE_OPEN")) 
         {
             pFlag = false;
             currentLine = "w" + currentLine;

@@ -3,10 +3,10 @@ package TINYparser;
 import java.io.File;
 
 
-public class TestGraphics {
-    public static void createDotGraph()
+public class DrawGraph {
+    public static void createTreeGraph()
 {
-    Graphviz gv = new Graphviz();  
+    Graphviz gv = new Graphviz();
     gv.addln(gv.start_graph());
     gv.addln("graph[rankdir=LR];\n");
     gv.addln("node [shape=box];\n");
@@ -31,7 +31,7 @@ public class TestGraphics {
 }
 
     public static void main(String[] args) throws Exception {
-        createDotGraph();
+        createTreeGraph();
  }
     
 }

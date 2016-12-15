@@ -1,6 +1,7 @@
 package TINYparser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import javax.swing.JFileChooser;
 
@@ -123,12 +124,27 @@ public class TINYparser extends javax.swing.JFrame {
         {
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
-                BufferedReader br = new BufferedReader(new FileReader(FileChooser.getSelectedFile()));
+                Process proc;
+                String osName = System.getProperty("os.name").toLowerCase();
+                String[] argL = new String[] {"/bin/bash", "-c", "./TINY", FileChooser.getSelectedFile().getAbsolutePath()};
+                String[] argW = new String[] {"cmd.exe", "/C", "TINY.exe", FileChooser.getSelectedFile().getAbsolutePath()};
+                if(osName.startsWith("l"))
+                {
+                    proc = new ProcessBuilder(argL).start();
+                    //proc.waitFor();
+                }
+                else if(osName.startsWith("w"))
+                {
+                    proc = new ProcessBuilder(argW).start();
+                    //proc.waitFor();
+                }
+                String path = TINYparser.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()+"TINYparser/scannerOutput.txt";
+                BufferedReader br = new BufferedReader(new FileReader(path));
                 StringBuilder sb = new StringBuilder();
                 String line = br.readLine();
                 while (line != null) {
                     sb.append(line);
-                    sb.append(System.lineSeparator());
+                    sb.append("\n");
                     line = br.readLine();
                 }
                 allLines = sb.toString();
@@ -140,7 +156,7 @@ public class TINYparser extends javax.swing.JFrame {
         }
         catch(Exception e)
         {
-            System.out.println("Error reading file. :(");
+            System.out.println("Error reading file.");
         }
     }//GEN-LAST:event_SelectButtonActionPerformed
 
