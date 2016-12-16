@@ -1,8 +1,7 @@
 package TINYparser;
 
-import java.io.BufferedReader;
+import TINYscanner.TINYscanner;
 import java.io.File;
-import java.io.FileReader;
 import javax.swing.JFileChooser;
 
 
@@ -14,6 +13,7 @@ public class TINYparser extends javax.swing.JFrame {
      */
     private static String allLines;
     private static TreeNode tree;
+    private static File codeFile;
     public TINYparser() {
         initComponents();
     }
@@ -107,6 +107,8 @@ public class TINYparser extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void RunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunButtonActionPerformed
+        TINYscanner scanner = new TINYscanner(codeFile);
+        allLines = scanner.doScan();
         backEndParser backEnd = new backEndParser(allLines);
         tree = new TreeNode();
         tree = backEnd.program();
@@ -126,30 +128,7 @@ public class TINYparser extends javax.swing.JFrame {
         {
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
-                Process proc;
-                String osName = System.getProperty("os.name").toLowerCase();
-                String[] argL = new String[] {"/bin/bash", "-c", "./TINY", FileChooser.getSelectedFile().getAbsolutePath()};
-                String[] argW = new String[] {"cmd.exe", "/C", "TINY.exe", FileChooser.getSelectedFile().getAbsolutePath()};
-                if(osName.startsWith("l"))
-                {
-                    proc = new ProcessBuilder(argL).start();
-                    //proc.waitFor();
-                }
-                else if(osName.startsWith("w"))
-                {
-                    proc = new ProcessBuilder(argW).start();
-                    //proc.waitFor();
-                }
-                String path = TINYparser.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()+"TINYparser/scannerOutput.txt";
-                BufferedReader br = new BufferedReader(new FileReader(path));
-                StringBuilder sb = new StringBuilder();
-                String line = br.readLine();
-                while (line != null) {
-                    sb.append(line);
-                    sb.append("\n");
-                    line = br.readLine();
-                }
-                allLines = sb.toString();
+                codeFile = FileChooser.getSelectedFile();
             } 
             else 
             {

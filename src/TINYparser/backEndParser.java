@@ -15,7 +15,6 @@ public class backEndParser
     public backEndParser(String lines)
     {
         fileLines = lines.split("\n");
-        currentLine = fileLines[0];
         pFlag = false;
         eFlag = false;
         sFlag = false;
@@ -27,6 +26,7 @@ public class backEndParser
     }
     public TreeNode program()
     {
+        currentLine = fileLines[0];
         TreeNode currentNode = new TreeNode("root");
         currentNode = stmt_sequence(currentNode);
         return currentNode;
