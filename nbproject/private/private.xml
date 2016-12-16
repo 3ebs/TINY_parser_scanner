@@ -5,8 +5,9 @@
         <group>
             <file>file:/home/yousef/Projects/TINYparser/src/TINYparser/TreeNode.java</file>
             <file>file:/home/yousef/Projects/TINYparser/src/TINYparser/backEndParser.java</file>
+            <file>file:/home/yousef/Projects/TINYparser/src/TINYscanner/TINYscanner.java</file>
             <file>file:/home/yousef/Projects/TINYparser/src/TINYparser/TINYparser.java</file>
-            <file>file:/home/yousef/Projects/TINYparser/src/TINYparser/DrawGraph.java</file>
+            <file>file:/home/yousef/Projects/TINYparser/src/TINYparser/Graphviz.java</file>
         </group>
     </open-files>
 </project-private>

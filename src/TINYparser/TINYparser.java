@@ -110,7 +110,7 @@ public class TINYparser extends javax.swing.JFrame {
         TINYscanner scanner = new TINYscanner(codeFile);
         allLines = scanner.doScan();
         backEndParser backEnd = new backEndParser(allLines);
-        tree = new TreeNode();
+        tree = new TreeNode(0);
         tree = backEnd.program();
         tree.printTree();
         tree.createTreeGraph();

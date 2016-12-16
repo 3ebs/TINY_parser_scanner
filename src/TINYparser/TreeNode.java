@@ -1,6 +1,7 @@
 package TINYparser;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -9,12 +10,15 @@ public class TreeNode
 {	
     String data;
     TreeNode parent;
+    int level;
     LinkedList<TreeNode> children;
-    public TreeNode(String data) {
+    public TreeNode(String data, int lvl) {
         this.data = data;
+        this.level = lvl;
         this.children = new LinkedList<TreeNode>();
     }
-    public TreeNode() {
+    public TreeNode(int lvl) {
+        this.level = lvl;
         this.children = new LinkedList<TreeNode>();
     }
     public void printTree()
@@ -25,12 +29,12 @@ public class TreeNode
     {   
         if (tmp.isLeaf()) 
         {
-            System.out.println(tmp.data);
+            System.out.println(tmp.data + "\t\t" + tmp.level);
             return;
         }
         else
         {
-            System.out.println(tmp.data);
+            System.out.println(tmp.data + "\t\t" + tmp.level);
         }
         ListIterator<TreeNode> listIterator = tmp.children.listIterator();
         while (listIterator.hasNext()) 
@@ -60,7 +64,7 @@ public class TreeNode
         return counter;
     }
     public TreeNode addChild(String childData) {
-        TreeNode childNode = new TreeNode(childData);
+        TreeNode childNode = new TreeNode(childData, this.level+1);
         childNode.parent = this;
         this.children.add(childNode);
         return childNode;
@@ -88,7 +92,7 @@ public class TreeNode
         return this;
     }
     public TreeNode addChild() {
-        TreeNode childNode = new TreeNode();
+        TreeNode childNode = new TreeNode(this.level+1);
         childNode.parent = this;
         this.children.add(childNode);
         return childNode;
@@ -100,9 +104,24 @@ public class TreeNode
     public TreeNode setNode(TreeNode t1, boolean flag)
     {
         this.children.clear();
-        if(flag) this.children = t1.children;
+        if(flag) 
+        {
+            this.children = t1.children;
+            for(int i=0; i < this.children.size(); i++)
+            {
+                children.get(i).setLevel(t1.level);
+            }
+        }
         this.data = t1.getData();
         return this;
+    }
+    public void setLevel(int x)
+    {
+        this.level = x;
+    }
+    public int getLevel()
+    {
+        return this.level;
     }
     public String getData()
     {

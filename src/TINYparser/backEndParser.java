@@ -27,7 +27,7 @@ public class backEndParser
     public TreeNode program()
     {
         currentLine = fileLines[0];
-        TreeNode currentNode = new TreeNode("root");
+        TreeNode currentNode = new TreeNode("root", 0);
         currentNode = stmt_sequence(currentNode);
         return currentNode;
     }
