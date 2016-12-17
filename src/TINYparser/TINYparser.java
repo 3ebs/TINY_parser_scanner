@@ -113,7 +113,6 @@ public class TINYparser extends javax.swing.JFrame {
         tree = new TreeNode(0);
         tree = backEnd.program();
         tree.printTree();
-        tree.createTreeGraph();
     }//GEN-LAST:event_RunButtonActionPerformed
 
     private void SelectButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SelectButtonMouseClicked

@@ -1,7 +1,7 @@
 package TINYparser;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -21,16 +21,110 @@ public class TreeNode
         this.level = lvl;
         this.children = new LinkedList<TreeNode>();
     }
+    
+    
     public void printTree()
     {
-        print(this);
+        int maxLevel = 0;
+        maxLevel = getMaxLevel(this, maxLevel);
+        maxLevel++;
+        int [] noNodesInLevel = new int [maxLevel];
+        noNodesInLevel = getNoNodesInLevel(this,maxLevel,noNodesInLevel);
+        TreeNode[][] Tree = new TreeNode[maxLevel][];
+        for (int i = 0; i < maxLevel; i++)
+            Tree[i] = new TreeNode[noNodesInLevel[i]];
+        Tree = setNodeInArray(Tree,this);
+        String[] nodes = new String [maxLevel];
+        nodes = levelAcc(Tree);
+        createDotGraph(nodes ,this);
+        
     }
-    private void print(TreeNode tmp)
+    public void createDotGraph(String [] nodes, TreeNode node)
+    {
+        String acc = "rankdir=\"LR\";\n" +
+                "splines = false;\n" +
+                "style=invis;";
+        for (int i = nodes.length-1; i > 0; i--) {
+            acc += "subgraph cluster" + i + " {" + nodes[i] + "}";
+        }
+        acc += drawToParent(node,"");
+        Graphviz gv = new Graphviz();  
+        gv.addln(gv.start_graph());
+        gv.addln(acc);
+        gv.addln(gv.end_graph());  
+        System.out.println(gv.getDotSource());  
+
+        File out = new File("out.gif");
+        gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out);
+    }
+    
+    public String drawToParent(TreeNode tmp, String drawToParent)
+    {
+        if (tmp.getLevel() > 1) {
+            drawToParent += "\"" + tmp.getData() + tmp.getParent().getData() + tmp.getLevel() 
+                    + "\" -> \"" + tmp.getParent().getData() + tmp.getParent().getParent().getData() 
+                    + tmp.getParent().getLevel() + "\"[constraint=false];";
+        }
+        if (tmp.isLeaf())
+            return drawToParent;
+        ListIterator<TreeNode> listIterator = tmp.children.listIterator();
+        while (listIterator.hasNext()) 
+        {
+            TreeNode tmp2 = listIterator.next();
+            drawToParent = drawToParent(tmp2,drawToParent);
+        }
+        return drawToParent;
+    }
+    public TreeNode[][] setNodeInArray(TreeNode[][] tree, TreeNode tmp)
+    {
+        int level = tmp.getLevel();
+        tree[level][getEmptyElement(tree[level])] = tmp;
+        if (tmp.isLeaf()) 
+        {
+            return tree;
+        }
+        ListIterator<TreeNode> listIterator = tmp.children.listIterator();
+        while (listIterator.hasNext()) 
+        {
+            TreeNode tmp2 = listIterator.next();
+            tree = setNodeInArray(tree,tmp2);
+        }
+        return tree;
+    } 
+    public int getEmptyElement(TreeNode[] arr)
+    {
+        int emptyIndex = 0;
+        for (emptyIndex = 0; emptyIndex < arr.length; emptyIndex++) {
+            if (arr[emptyIndex] == null) {
+                return emptyIndex;
+            }
+        }
+        return emptyIndex;
+    }
+    
+    private int[] getNoNodesInLevel(TreeNode tmp, int maxLevel, int [] noNodesInLevel)
+    {
+        noNodesInLevel[tmp.getLevel()]++;
+        if (tmp.isLeaf()) 
+        {
+            return noNodesInLevel;
+        }
+        ListIterator<TreeNode> listIterator = tmp.children.listIterator();
+        while (listIterator.hasNext()) 
+        {
+            TreeNode tmp2 = listIterator.next();
+            noNodesInLevel = getNoNodesInLevel(tmp2,maxLevel,noNodesInLevel);
+        }
+        return noNodesInLevel;
+    }
+    private int getMaxLevel(TreeNode tmp, int maxLevel)
     {   
         if (tmp.isLeaf()) 
         {
-            System.out.println(tmp.data + "\t\t" + tmp.level);
-            return;
+           System.out.println(tmp.data + "\t\t" + tmp.level);
+            if ( maxLevel < tmp.level) 
+                maxLevel = tmp.level;
+            return maxLevel;
         }
         else
         {
@@ -40,8 +134,10 @@ public class TreeNode
         while (listIterator.hasNext()) 
         {
             TreeNode tmp2 = listIterator.next();
-            print(tmp2);
+            maxLevel = getMaxLevel(tmp2,maxLevel);
+            
         }
+        return maxLevel;
     }
     private boolean isLeaf()
     {
@@ -153,5 +249,61 @@ public class TreeNode
         File out = new File("out.gif");  
         gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out);
     }
+    
+    public int getNoLevels ()
+    {
+        ListIterator<TreeNode> listIterator = this.children.listIterator();
+        int countLevels = 0;
+        while (listIterator.hasNext()) 
+        {
+            TreeNode tmp2 = listIterator.next();
+            if (countLevels < tmp2.getLevel()) 
+                countLevels = tmp2.getLevel();
+        }
+        return countLevels;
+    }
+    
+    
+
+    
+    
+    
+    public String[] levelAcc(TreeNode [][]TreeNode)
+    {
+        String draw = ""; 
+        int levels = TreeNode.length;
+        String[] levelData = new String[levels];
+        Arrays.fill(levelData, "");
+        for (int i = 1; i < levels; i++) {
+            draw = "";
+            for (int j = 0; j < TreeNode[i].length; j++) {
+                if (j != 0) 
+                    draw += " -> \"" + TreeNode[i][j].getData() + TreeNode[i][j].getParent().getData() + TreeNode[i][j].getLevel() + "\"";
+                else
+                    draw += "\"" + TreeNode[i][j].getData() + TreeNode[i][j].getParent().getData() + TreeNode[i][j].getLevel() + "\"";
+                if (TreeNode[i][j].getData().startsWith("IF")
+                        ||TreeNode[i][j].getData().startsWith("read")
+                        ||TreeNode[i][j].getData().startsWith("assign")
+                        ||TreeNode[i][j].getData().startsWith("repeat")
+                        ||TreeNode[i][j].getData().startsWith("write")) {
+                    levelData[i] += "node[shape = box] \"" + TreeNode[i][j].getData() + TreeNode[i][j].getParent().getData() + TreeNode[i][j].getLevel() +  "\" [label = \"" + TreeNode[i][j].getData() + "\"];";
+                    //levelData[i] += "node[shape = box] \"" + i + j + "\" [label = \"" + TreeNode[i][j].getData() + "\"];";
+                }
+                else
+                {
+                    levelData[i] += "node[shape = oval] \"" + TreeNode[i][j].getData() + TreeNode[i][j].getParent().getData() + TreeNode[i][j].getLevel() + "\" [label = \"" + TreeNode[i][j].getData() + "\"];";
+                    //levelData[i] += "node[shape = oval] \"" + i + j + "\" [label = \"" + TreeNode[i][j].getData() + "\"];";
+                }
+            }
+            
+            levelData[i] += draw + "[style=invis];";
+        }
+        return levelData;
+    }
+    
+    
+    
+    
+    
 }
 
