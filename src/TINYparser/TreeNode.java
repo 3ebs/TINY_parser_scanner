@@ -65,17 +65,11 @@ public class TreeNode
         String x;
         TreeNode child = new TreeNode(0);
         TreeNode next_child = new TreeNode(0);
-        boolean opFlag = false;
         TreeNode first_child = tmp;
         if (tmp.isLeaf())
             return draw;
         if(first_child.getData().endsWith("(=)") || first_child.getData().endsWith("(<)") || first_child.getData().endsWith("(+)") || first_child.getData().endsWith("(-)") || first_child.getData().endsWith("(*)") || first_child.getData().endsWith("(/)"))
         {
-            opFlag = true;
-//            draw += "\"" + tmp.getData() + tmp.getParent().getData() + tmp.getLevel() + "\"";
-//            draw += "->";
-//            first_child = tmp.getChildren().get(i+1);
-//            draw += "\"" + first_child.getData() + first_child.getParent().getData() + first_child.getLevel() + "\";\n";
             for (int j = 0; j < 2; j++) 
             {
                 child = tmp;
@@ -86,7 +80,16 @@ public class TreeNode
                 draw += "[constraint=false];\n";
                 //x = tmp.getChildren().get(i).getData();
             }
-                return draw;
+            if(first_child.getData().endsWith("(=)") || first_child.getData().endsWith("(<)") )
+            {
+                child = first_child.getParent();
+                draw += "\"" + child.getData() + child.getParent().getData() + child.getLevel() + "\"";
+                draw += "->";
+                next_child = child.getChildren().get(1);
+                draw += "\"" + next_child.getData() + next_child.getParent().getData() + next_child.getLevel() + "\"";
+                draw += "[constraint=false];\n";
+            }
+            return draw;
         }
         if(!tmp.getData().startsWith("read"))
             first_child = tmp.getChildren().get(i);
@@ -100,8 +103,7 @@ public class TreeNode
             draw += "\"" + first_child.getData() + first_child.getParent().getData() + first_child.getLevel() + "\"[constraint=false];\n";
         }
         
-        if(opFlag) x = tmp.getChildren().get(++i).getData();
-        else x = tmp.getChildren().get(i).getData();
+        x = tmp.getChildren().get(i).getData();
         while((x.startsWith("read") || x.startsWith("write") || x.startsWith("IF") || x.startsWith("repeat") || x.startsWith("assign")) && i < tmp.countChildren()-1)
         {
             child = tmp.getChildren().get(i);
