@@ -55,7 +55,7 @@ public class TreeNode
         gv.addln(gv.end_graph());  
         System.out.println(gv.getDotSource());  
 
-        File out = new File("out.gif");
+        File out = new File("out.jpg");
         gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out);
     }
     
@@ -75,7 +75,7 @@ public class TreeNode
             {
                 child = tmp;
                 draw += "\"" + child.getData() + child.getParent().getData() + child.getLevel() + "\"";
-                draw += "->";
+                draw += "--";
                 next_child = tmp.getChildren().get(j);
                 draw += "\"" + next_child.getData() + next_child.getParent().getData() + next_child.getLevel() + "\"";
                 draw += "[constraint=false];\n";
@@ -85,7 +85,7 @@ public class TreeNode
             {
                 child = first_child.getParent();
                 draw += "\"" + child.getData() + child.getParent().getData() + child.getLevel() + "\"";
-                draw += "->";
+                draw += "--";
                 if (first_child == child.getChildren().get(0))
                     next_child = child.getChildren().get(1);
                 else
@@ -102,7 +102,7 @@ public class TreeNode
         if(!tmp.getData().equals("root") && !tmp.getData().startsWith("read"))
         {
             draw += "\"" + tmp.getData() + tmp.getParent().getData() + tmp.getLevel() + "\"";
-            draw += "->";
+            draw += "--";
             first_child = tmp.getChildren().get(i);
             draw += "\"" + first_child.getData() + first_child.getParent().getData() + first_child.getLevel() + "\"[constraint=false];\n";
         }
@@ -123,7 +123,7 @@ public class TreeNode
             if(tmp.getChildren().get(i+1).getData().startsWith("OP")) break;
             child = tmp.getChildren().get(i);
             draw += "\"" + child.getData() + child.getParent().getData() + child.getLevel() + "\"";
-            draw += "->";
+            draw += "--";
             next_child = tmp.getChildren().get(++i);
             draw += "\"" + next_child.getData() + next_child.getParent().getData() + next_child.getLevel() + "\"";
             draw += ";\n";
@@ -315,7 +315,7 @@ public class TreeNode
             count = 0;
             for (int j = 0; j < TreeNode[i].length; j++) {
                 if (j != 0) 
-                    draw += " -> \"" + TreeNode[i][j].getData() + TreeNode[i][j].getParent().getData() + TreeNode[i][j].getLevel() + "\"";
+                    draw += " -- \"" + TreeNode[i][j].getData() + TreeNode[i][j].getParent().getData() + TreeNode[i][j].getLevel() + "\"";
                 else
                     draw += "\"" + TreeNode[i][j].getData() + TreeNode[i][j].getParent().getData() + TreeNode[i][j].getLevel() + "\"";
                 count++;

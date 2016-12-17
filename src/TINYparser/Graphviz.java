@@ -8,17 +8,28 @@ import java.io.FileOutputStream;
 public class Graphviz
 {
     
-   private static String TEMP_DIR = "/tmp";   
+   private static String TEMP_DIR ;   
    
     
-   private static String DOT = "/usr/bin/dot";   
+   private static String DOT ;
    
    
     private StringBuffer graph = new StringBuffer();   
    
     
    public Graphviz() {   
-   }   
+       String osName = System.getProperty("os.name").toLowerCase();
+       if(osName.startsWith("l")) 
+       {
+           DOT = "/usr/bin/dot";
+           TEMP_DIR = "/tmp"; 
+       }
+       else if(osName.startsWith("w"))
+       {
+           DOT = "C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe";
+           TEMP_DIR = "C:\\Windows\\Temp";
+       }
+   } 
    
     
    public String getDotSource() {   
@@ -186,7 +197,7 @@ public class Graphviz
    
    
    public String start_graph() {   
-      return "digraph G {";   
+      return "graph G {";   
    }   
    
    public String end_graph() {   
