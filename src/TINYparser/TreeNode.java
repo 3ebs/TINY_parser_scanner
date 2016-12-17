@@ -85,7 +85,10 @@ public class TreeNode
                 child = first_child.getParent();
                 draw += "\"" + child.getData() + child.getParent().getData() + child.getLevel() + "\"";
                 draw += "->";
-                next_child = child.getChildren().get(1);
+                if (first_child == child.getChildren().get(0))
+                    next_child = child.getChildren().get(1);
+                else
+                    next_child = first_child;
                 draw += "\"" + next_child.getData() + next_child.getParent().getData() + next_child.getLevel() + "\"";
                 draw += "[constraint=false];\n";
             }
