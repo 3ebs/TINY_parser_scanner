@@ -111,7 +111,7 @@ public class TINYparser extends javax.swing.JFrame {
         allLines = scanner.doScan();
         backEndParser backEnd = new backEndParser(allLines);
         tree = new TreeNode(0);
-        tree = backEnd.program();
+        tree = backEnd.program();   
         tree.printTree();
     }//GEN-LAST:event_RunButtonActionPerformed
 

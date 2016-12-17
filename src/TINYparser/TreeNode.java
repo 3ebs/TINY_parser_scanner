@@ -44,13 +44,14 @@ public class TreeNode
         String acc = "rankdir=\"LR\";\n" +
                 "splines = false;\n" +
                 "style=invis;";
-        for (int i = nodes.length-1; i > 0; i--) {
+        for (int i = 0; i < nodes.length; i++) {
             acc += "subgraph cluster" + i + " {" + nodes[i] + "}";
         }
         acc += drawToParent(node,"");
         Graphviz gv = new Graphviz();  
         gv.addln(gv.start_graph());
         gv.addln(acc);
+        //gv.addln("overlap=false");
         gv.addln(gv.end_graph());  
         System.out.println(gv.getDotSource());  
 
@@ -58,22 +59,69 @@ public class TreeNode
         gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out);
     }
     
-    public String drawToParent(TreeNode tmp, String drawToParent)
+    public String drawToParent(TreeNode tmp, String draw)
     {
-        if (tmp.getLevel() > 1) {
-            drawToParent += "\"" + tmp.getData() + tmp.getParent().getData() + tmp.getLevel() 
-                    + "\" -> \"" + tmp.getParent().getData() + tmp.getParent().getParent().getData() 
-                    + tmp.getParent().getLevel() + "\"[constraint=false];";
-        }
+        int i = 0;
+        String x;
+        TreeNode child = new TreeNode(0);
+        TreeNode next_child = new TreeNode(0);
+        boolean opFlag = false;
+        TreeNode first_child = tmp;
         if (tmp.isLeaf())
-            return drawToParent;
+            return draw;
+        if(first_child.getData().endsWith("(=)") || first_child.getData().endsWith("(<)") || first_child.getData().endsWith("(+)") || first_child.getData().endsWith("(-)") || first_child.getData().endsWith("(*)") || first_child.getData().endsWith("(/)"))
+        {
+            opFlag = true;
+            draw += "\"" + tmp.getData() + tmp.getParent().getData() + tmp.getLevel() + "\"";
+            draw += "->";
+            first_child = tmp.getChildren().get(i+1);
+            draw += "\"" + first_child.getData() + first_child.getParent().getData() + first_child.getLevel() + "\";\n";
+            for (int j = 0; j < 2; j++) 
+            {
+                child = tmp;
+                draw += "\"" + child.getData() + child.getParent().getData() + child.getLevel() + "\"";
+                draw += "->";
+                next_child = tmp.getChildren().get(j);
+                draw += "\"" + next_child.getData() + next_child.getParent().getData() + next_child.getLevel() + "\"";
+                draw += "[constraint=false];\n";
+                //x = tmp.getChildren().get(i).getData();
+            }
+                return draw;
+        }
+        if(!tmp.getData().startsWith("read"))
+            first_child = tmp.getChildren().get(i);
+        else
+            return draw;
+        if(!tmp.getData().equals("root") && !tmp.getData().startsWith("read"))
+        {
+            draw += "\"" + tmp.getData() + tmp.getParent().getData() + tmp.getLevel() + "\"";
+            draw += "->";
+            first_child = tmp.getChildren().get(i);
+            draw += "\"" + first_child.getData() + first_child.getParent().getData() + first_child.getLevel() + "\"[constraint=false];\n";
+        }
+        
+        if(opFlag) x = tmp.getChildren().get(++i).getData();
+        else x = tmp.getChildren().get(i).getData();
+        while((x.startsWith("read") || x.startsWith("write") || x.startsWith("IF") || x.startsWith("repeat") || x.startsWith("assign")) && i < tmp.countChildren()-1)
+        {
+            child = tmp.getChildren().get(i);
+            draw += "\"" + child.getData() + child.getParent().getData() + child.getLevel() + "\"";
+            draw += "->";
+            next_child = tmp.getChildren().get(++i);
+            draw += "\"" + next_child.getData() + next_child.getParent().getData() + next_child.getLevel() + "\"";
+            draw += ";\n";
+            x = tmp.getChildren().get(i).getData();
+        }
+        
+        
         ListIterator<TreeNode> listIterator = tmp.children.listIterator();
         while (listIterator.hasNext()) 
         {
-            TreeNode tmp2 = listIterator.next();
-            drawToParent = drawToParent(tmp2,drawToParent);
+            first_child = listIterator.next();
+            draw = drawToParent(first_child,draw);
+            System.out.println(draw);
         }
-        return drawToParent;
+        return draw;
     }
     public TreeNode[][] setNodeInArray(TreeNode[][] tree, TreeNode tmp)
     {
@@ -223,33 +271,6 @@ public class TreeNode
     {
         return this.data;
     }
-    public void createTreeGraph()
-    {
-        Graphviz gv = new Graphviz();
-        gv.addln(gv.start_graph());
-        gv.addln("graph[rankdir=LR];\n");
-        
-    //    gv.addln("node [shape=box];\n");
-    //    gv.addln("n001;\nn001 [label=\"write\"];\n");
-    //    gv.addln("n003;\nn003 [label=\"read\n(x)\"];\n");
-    //    gv.addln("node [shape=oval];\n");
-    //    gv.addln("n002;\nn002 [label=\"x\"];\n");
-    //    gv.addln("n001->n002 [constraint = false];\n");
-    //    gv.addln("n001->n003;\n");
-
-
-    //     gv.addln("A -> B;");  
-    //     gv.addln("A -> C;");
-    //     gv.addln("A -> D;");
-
-        gv.addln("overlap=false");
-        gv.addln(gv.end_graph());  
-        System.out.println(gv.getDotSource());  
-
-        File out = new File("out.gif");  
-        gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out);
-    }
-    
     public int getNoLevels ()
     {
         ListIterator<TreeNode> listIterator = this.children.listIterator();
@@ -262,25 +283,23 @@ public class TreeNode
         }
         return countLevels;
     }
-    
-    
-
-    
-    
-    
     public String[] levelAcc(TreeNode [][]TreeNode)
     {
         String draw = ""; 
         int levels = TreeNode.length;
+        int count;
         String[] levelData = new String[levels];
         Arrays.fill(levelData, "");
         for (int i = 1; i < levels; i++) {
             draw = "";
+            count = 0;
             for (int j = 0; j < TreeNode[i].length; j++) {
                 if (j != 0) 
                     draw += " -> \"" + TreeNode[i][j].getData() + TreeNode[i][j].getParent().getData() + TreeNode[i][j].getLevel() + "\"";
                 else
                     draw += "\"" + TreeNode[i][j].getData() + TreeNode[i][j].getParent().getData() + TreeNode[i][j].getLevel() + "\"";
+                count++;
+
                 if (TreeNode[i][j].getData().startsWith("IF")
                         ||TreeNode[i][j].getData().startsWith("read")
                         ||TreeNode[i][j].getData().startsWith("assign")
@@ -295,15 +314,13 @@ public class TreeNode
                     //levelData[i] += "node[shape = oval] \"" + i + j + "\" [label = \"" + TreeNode[i][j].getData() + "\"];";
                 }
             }
-            
-            levelData[i] += draw + "[style=invis];";
+            if (count > 1)
+                levelData[i] += draw + "[style=invis];";
+            else
+                levelData[i] += draw;
+                
         }
         return levelData;
-    }
-    
-    
-    
-    
-    
+    } 
 }
 
