@@ -109,6 +109,7 @@ public class TreeNode
         x = tmp.getChildren().get(i).getData();
         while((x.startsWith("read") || x.startsWith("write") || x.startsWith("IF") || x.startsWith("repeat") || x.startsWith("assign")) && i < tmp.countChildren()-1)
         {
+            if(tmp.getChildren().get(i+1).getData().startsWith("OP")) break;
             child = tmp.getChildren().get(i);
             draw += "\"" + child.getData() + child.getParent().getData() + child.getLevel() + "\"";
             draw += "->";
