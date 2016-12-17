@@ -63,6 +63,7 @@ public class TreeNode
     {
         int i = 0;
         String x;
+        boolean ifFlag = false;
         TreeNode child = new TreeNode(0);
         TreeNode next_child = new TreeNode(0);
         TreeNode first_child = tmp;
@@ -97,7 +98,7 @@ public class TreeNode
         if(!tmp.getData().startsWith("read"))
             first_child = tmp.getChildren().get(i);
         else
-            return draw;
+            return draw;        
         if(!tmp.getData().equals("root") && !tmp.getData().startsWith("read"))
         {
             draw += "\"" + tmp.getData() + tmp.getParent().getData() + tmp.getLevel() + "\"";
@@ -105,8 +106,18 @@ public class TreeNode
             first_child = tmp.getChildren().get(i);
             draw += "\"" + first_child.getData() + first_child.getParent().getData() + first_child.getLevel() + "\"[constraint=false];\n";
         }
-        
-        x = tmp.getChildren().get(i).getData();
+        if(!tmp.getData().equals("root"))
+            if(tmp.getParent().getChildren().get(1) == tmp && tmp.getParent().getData().equals("IF"))
+            {
+                x = tmp.getData();
+                tmp = tmp.getParent();
+                ifFlag = true;
+                i++;
+            }
+            else
+                x = tmp.getChildren().get(i).getData();
+        else
+            x = tmp.getChildren().get(i).getData();
         while((x.startsWith("read") || x.startsWith("write") || x.startsWith("IF") || x.startsWith("repeat") || x.startsWith("assign")) && i < tmp.countChildren()-1)
         {
             if(tmp.getChildren().get(i+1).getData().startsWith("OP")) break;
@@ -118,8 +129,11 @@ public class TreeNode
             draw += ";\n";
             x = tmp.getChildren().get(i).getData();
         }
-        
-        
+        if(ifFlag)
+        {
+            tmp = tmp.getChildren().get(1);
+            ifFlag = false;
+        }
         ListIterator<TreeNode> listIterator = tmp.children.listIterator();
         while (listIterator.hasNext()) 
         {
