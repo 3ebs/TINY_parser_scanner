@@ -51,7 +51,7 @@ public class TreeNode
         Graphviz gv = new Graphviz();  
         gv.addln(gv.start_graph());
         gv.addln(acc);
-        //gv.addln("overlap=false");
+        gv.addln("overlap=false");
         gv.addln(gv.end_graph());  
         System.out.println(gv.getDotSource());  
 
@@ -72,10 +72,10 @@ public class TreeNode
         if(first_child.getData().endsWith("(=)") || first_child.getData().endsWith("(<)") || first_child.getData().endsWith("(+)") || first_child.getData().endsWith("(-)") || first_child.getData().endsWith("(*)") || first_child.getData().endsWith("(/)"))
         {
             opFlag = true;
-            draw += "\"" + tmp.getData() + tmp.getParent().getData() + tmp.getLevel() + "\"";
-            draw += "->";
-            first_child = tmp.getChildren().get(i+1);
-            draw += "\"" + first_child.getData() + first_child.getParent().getData() + first_child.getLevel() + "\";\n";
+//            draw += "\"" + tmp.getData() + tmp.getParent().getData() + tmp.getLevel() + "\"";
+//            draw += "->";
+//            first_child = tmp.getChildren().get(i+1);
+//            draw += "\"" + first_child.getData() + first_child.getParent().getData() + first_child.getLevel() + "\";\n";
             for (int j = 0; j < 2; j++) 
             {
                 child = tmp;
