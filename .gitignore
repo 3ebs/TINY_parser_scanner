@@ -2,3 +2,4 @@
 *.properties
 *.txt
 TINY
+/dist/

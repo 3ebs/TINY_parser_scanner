@@ -53,7 +53,7 @@ public class TreeNode
         gv.addln(acc);
         gv.addln("overlap=false");
         gv.addln(gv.end_graph());  
-        System.out.println(gv.getDotSource());  
+        //System.out.println(gv.getDotSource());  
 
         File out = new File("out.jpg");
         gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out);
@@ -139,7 +139,7 @@ public class TreeNode
         {
             first_child = listIterator.next();
             draw = drawToParent(first_child,draw);
-            System.out.println(draw);
+            //System.out.println(draw);
         }
         return draw;
     }
@@ -189,14 +189,14 @@ public class TreeNode
     {   
         if (tmp.isLeaf()) 
         {
-           System.out.println(tmp.data + "\t\t" + tmp.level);
+           //System.out.println(tmp.data + "\t\t" + tmp.level);
             if ( maxLevel < tmp.level) 
                 maxLevel = tmp.level;
             return maxLevel;
         }
         else
         {
-            System.out.println(tmp.data + "\t\t" + tmp.level);
+            //System.out.println(tmp.data + "\t\t" + tmp.level);
         }
         ListIterator<TreeNode> listIterator = tmp.children.listIterator();
         while (listIterator.hasNext()) 
