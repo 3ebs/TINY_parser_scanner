@@ -1,0 +1,5 @@
+*.gif
+*.properties
+*.txt
+TINY
+/dist/
